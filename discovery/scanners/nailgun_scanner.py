@@ -14,7 +14,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import 
 from oslo_config import cfg
 from oslo_log import log
 from oslo_service import periodic_task
@@ -77,14 +76,14 @@ class NailgunScanner(BaseScanner):
                 spacing=self.config.nailgun_interval)
             def run(_self, *args, **kwargs):
                 self.on_tick(keystone)
-
         task = PeriodicTask(self.config)
-        
+
         tg = threadgroup.ThreadGroup()
-        tg.add_dynamic_timer(task.run, context=None)
+        tg.add_dynamic_timer(task.run, context=None, periodic_interval_max=10)
 
         srv = service.Service()
-        srv.tg.add_dynamic_timer(task.run, context=None)
+        srv.tg.add_dynamic_timer(task.run, context=None,
+                                 periodic_interval_max=10)
 
         service_launcher = service.ServiceLauncher(self.config)
         service_launcher.launch_service(srv)
@@ -92,7 +91,8 @@ class NailgunScanner(BaseScanner):
 
     def on_tick(self, keystone):
         try:
-            LOG.exception('Getting nodes from Nailgun %s', self.config.nailgun_nodes_endpoint)
+            LOG.exception('Getting nodes from Nailgun %s',
+                          self.config.nailgun_nodes_endpoint)
             nodes = keystone.get(self.config.nailgun_nodes_endpoint)[1]
 
             for node in nodes:

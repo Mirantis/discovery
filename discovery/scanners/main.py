@@ -44,7 +44,7 @@ def configure():
     # TODO add subcommands/groups not to load all parameters globally
     for scanner in available_scanners:
         CONF.register_cli_opts(scanner.cli_opts)
-        
+
     CONF(sys.argv[1:], project=project, version=version)
 
     return CONF
