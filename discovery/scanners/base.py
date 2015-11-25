@@ -78,7 +78,17 @@ class BaseScanner(object):
 
     def _serialize_for_discovery(self, data):
         self._extend_with_matching(data)
+        self._define_block_devices(data)
         return jsonutils.dumps(data)
+
+    def _define_block_devices(self, data):
+        block_device = {}
+        for disk in data['meta']['disks']:
+            key = disk.pop('disk')
+            block_device[key] = disk
+
+        data['block_device'] = block_device
+        del data['meta']['disks']
 
     def _serialize_as_list_for_discovery(self, data):
         self._extend_with_matching(data)
