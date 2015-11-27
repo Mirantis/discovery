@@ -83,7 +83,7 @@ class MatchController(rest.RestController):
 
         return ids
 
-    
+
 class ActionsController(rest.RestController):
 
     match = MatchController()
@@ -116,13 +116,15 @@ class NodeController(rest.RestController):
 
     @pecan.expose(template='json')
     def post(self):
-        node_id = models.get_uuid()
-        models.NODES[node_id] = {}
         node_data = pecan.request.json
-        models.NODES[node_id]['matching_data'] = node_data.pop('matching_data')
-        models.NODES[node_id]['discovery'] = node_data
+        matching_data = node_data.pop('matching_data')
+        node_id = matching_data['source_id']
+
+        models.NODES[node_id] = {}
         models.NODES[node_id]['id'] = node_id
-        
+        models.NODES[node_id]['matching_data'] = matching_data
+        models.NODES[node_id]['discovery'] = node_data
+
         return models.NODES[node_id]
 
 
